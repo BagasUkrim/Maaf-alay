@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inces cantek mau minta maaf</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #ffe6f2;
+            font-family: sans-serif;
+            text-align: center;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- HALAMAN SAMPUL BIAR BISA AUTOPLAY --- */
+        .sampul {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffe6f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, pointer-events 0.5s ease;
+            padding: 20px;
+        }
+        .sampul.sembunyi {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .btn-buka {
+            background-color: #ff6699;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 102, 153, 0.4);
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* --- HALAMAN UTAMA --- */
+        .konten-utama {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .konten-utama.muncul {
+            opacity: 1;
+        }
+
+        h1 {
+            color: #d32f2f;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+        p {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 50px;
+            max-width: 300px;
+        }
+        .area-tombol {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+        button {
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            position: absolute;
+            transition: transform 0.1s ease;
+            cursor: pointer;
+        }
+        #btn-iya {
+            background-color: #4CAF50;
+            color: white;
+            left: 15%;
+            top: 40%;
+        }
+        #btn-tidak {
+            background-color: #f44336;
+            color: white;
+            right: 15%;
+            top: 40%;
+            touch-action: none;
+        }
+
+        /* --- DESAIN POP-UP LUCU DAN SIMPEL --- */
+        .overlay-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+        .overlay-popup.aktif {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .kontak-popup {
+            background-color: white;
+            padding: 30px 25px;
+            border-radius: 24px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        .overlay-popup.aktif .kontak-popup {
+            transform: scale(1);
+        }
+        .emoji-popup {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .teks-popup {
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .btn-tutup {
+            background-color: #ff6699;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255, 102, 153, 0.3);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN SAMPUL AWAL -->
+    <div class="sampul" id="halamanSampul">
+        <span style="font-size: 4rem;">💌</span>
+        <h2 style="color: #d32f2f; margin-top: 10px;">Anu...</h2>
+        <button class="btn-buka" onclick="bukaSurat()">Buka Pesan</button>
+    </div>
+
+    <!-- AUDIO BACKSOUND -->
+    <audio id="backsound" loop>
+        <source src="https://audio.com" type="audio/mpeg">
+    </audio>
+
+    <!-- KONTEN UTAMA -->
+    <div class="konten-utama" id="kontenUtama">
+        <h1>Maafin aku boleh kah 🥺</h1>
+        <p>inces mau baikan boleh gakkk, aku minta maaf sering marah-marah tp ga serius kok marah-marahnya 🫣</p>
+
+        <div class="area-tombol">
+            <button id="btn-iya" onclick="terimaMaaf()">Maafin!</button>
+            <button id="btn-tidak" ontouchstart="lariDong()" onclick="lariDong()">Enggak!</button>
+        </div>
+    </div>
+
+    <!-- STRUKTUR POP-UP KUSTOM -->
+    <div class="overlay-popup" id="customPopup">
+        <div class="kontak-popup">
+            <span class="emoji-popup">🥰</span>
+            <div class="teks-popup">yey makasi yaaaaaaaaa!<br>lope inces banyakbanyak32131314115151551x</div>
+            <button class="btn-tutup" onclick="tutupPopup()">Sama-sama sengkuh ❤️</button>
+        </div>
+    </div>
+
+    <script>
+        function bukaSurat() {
+            // Sembunyikan sampul dan munculkan konten utama
+            document.getElementById('halamanSampul').classList.add('sembunyi');
+            document.getElementById('kontenUtama').classList.add('muncul');
+            
+            // Putar musik secara aman (diizinkan browser karena dipicu tombol klik)
+            var audio = document.getElementById('backsound');
+            audio.play().catch(function(error) {
+                console.log("Autoplay gagal dipicu.");
+            });
+        }
+
+        function terimaMaaf() {
+            document.getElementById('customPopup').classList.add('aktif');
+        }
+
+        function tutupPopup() {
+            document.getElementById('customPopup').classList.remove('aktif');
+        }
+
+        function lariDong() {
+            var tombolTidak = document.getElementById('btn-tidak');
+            var xAcak = Math.floor(Math.random() * (window.innerWidth - 120));
+            var yAcak = Math.floor(Math.random() * (window.innerHeight - 150));
+            
+            tombolTidak.style.position = 'fixed';
+            tombolTidak.style.left = Math.max(10, xAcak) + 'px';
+            tombolTidak.style.top = Math.max(10, yAcak) + 'px';
+        }
+    </script>
+</body>
+</html>
